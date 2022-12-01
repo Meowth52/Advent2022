@@ -9,11 +9,22 @@ namespace Advent2022
 {
     public class Day01 : Day
     {
-        List<int> Instructions;
+        List<List<int>> Snacks;
         public Day01(string _input) : base(_input)
         {
             string Input = this.CheckFile(_input);
-            Instructions = this.ParseListOfInteger(Input);
+            List< string[]> hepp = this.ParseListOfStringArrays(Input);
+            Snacks = new List<List<int>>();
+            foreach (string[] elf in hepp)
+            {
+                Snacks.Add(new List<int>());
+                foreach(string snack in elf)
+                {
+                    Snacks.Last().Add(Int32.Parse(snack));
+                }
+            }
+            
+            ;
         }
         public override Tuple<string, string> GetResult()
         {
@@ -22,13 +33,27 @@ namespace Advent2022
         public string GetPartOne()
         {
             int ReturnValue = 0;
-
+            foreach(List<int> i in Snacks)
+            {
+                int thisOne = i.Sum();
+                if (thisOne > ReturnValue)
+                    ReturnValue = thisOne;
+            }
             return ReturnValue.ToString();
         }
         public string GetPartTwo()
         {
             int ReturnValue = 0;
-
+            List<int> Sums = new List<int>();
+            foreach (List<int> i in Snacks)
+            {
+                Sums.Add(i.Sum());
+            }
+            Sums.Sort();
+            for(int i = 1; i < 4; i++)
+            {
+                ReturnValue += Sums[Sums.Count - i];
+            }
             return ReturnValue.ToString();
         }
     }
