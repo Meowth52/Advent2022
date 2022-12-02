@@ -21,7 +21,7 @@ namespace Advent2022
             Instructions = this.ParseListOfStringArrays2(Input);
             MaterialValue = new Dictionary<string, int>()
             {
-                {"X", 1 } ,
+                {"X", 1},
                 {"Y", 2},
                 {"Z", 3}
             };
