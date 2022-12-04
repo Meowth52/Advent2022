@@ -37,7 +37,7 @@ namespace Advent2022
             int ReturnValue = 0;
             foreach (List<int> pair in Instructions)
             {
-                if ((pair[0] <= pair[3] && pair[1] >= pair[2]) || (pair[2] >= pair[1] && pair[3] <= pair[0]))
+                if ((pair[0] <= pair[3] && pair[1] >= pair[2]))
                 {
                     ReturnValue++;
                 }
