@@ -20,7 +20,7 @@ namespace Advent2022
             string[] stackStrings = this.ParseStringArray(splitted[0]);
             List<int> stackNumbers = this.ParseListOfInteger(stackStrings[stackStrings.Length - 1]);
             Stacks = new List<Stack<char>>();
-            Stacks2 = new List<Stack<char>>();
+            Stacks2 = new List<Stack<char>>();//because deep copy is bullshit 
             Stacks.Add(new Stack<char>()); //because fuck zero
             Stacks2.Add(new Stack<char>()); //because fuck zero
             foreach (int stack in stackNumbers)
