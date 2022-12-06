@@ -9,11 +9,11 @@ namespace Advent2022
 {
     public class Day06 : Day
     {
-        List<int> Instructions;
+        string Instructions;
         public Day06(string _input) : base(_input)
         {
             string Input = this.CheckFile(_input);
-            Instructions = this.ParseListOfInteger(Input);
+            Instructions = this.ParseJustOneLine(Input);
         }
         public override Tuple<string, string> GetResult()
         {
@@ -22,13 +22,40 @@ namespace Advent2022
         public string GetPartOne()
         {
             int ReturnValue = 0;
-
+            Queue<char> Uniqueness = new Queue<char>();
+            foreach (char c in Instructions)
+            {
+                ReturnValue++;
+                if (Uniqueness.Count() >= 3)
+                {
+                    if (!Uniqueness.Contains(c) && Uniqueness.Distinct().Count() == 3)
+                    {
+                        break;
+                    }
+                    Uniqueness.Dequeue();
+                }
+                Uniqueness.Enqueue(c);
+            }
             return ReturnValue.ToString();
         }
         public string GetPartTwo()
         {
             int ReturnValue = 0;
 
+            Queue<char> Uniqueness = new Queue<char>();
+            foreach (char c in Instructions)
+            {
+                ReturnValue++;
+                if (Uniqueness.Count() >= 13)
+                {
+                    if (!Uniqueness.Contains(c) && Uniqueness.Distinct().Count() == 13)
+                    {
+                        break;
+                    }
+                    Uniqueness.Dequeue();
+                }
+                Uniqueness.Enqueue(c);
+            }
             return ReturnValue.ToString();
         }
     }
