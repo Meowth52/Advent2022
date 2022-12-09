@@ -73,16 +73,12 @@ namespace Advent2022
                 for (int i = 0; i < Steps; i++)
                 {
                     Head.MoveNSteps(Direction);
+                    Coordinate Last = Head;
                     for (int i2 = 0; i2 < Tail.Count; i2++)
                     {
                         Coordinate Knot = Tail[i2];
-                        Coordinate Last;
-                        if (i2 == 0)
-                            Last = Head;
-                        else
-                            Last = Tail[i2 - 1];
 
-                        if (Last.ManhattanDistance(Knot) == 3)
+                        if (Last.ManhattanDistance(Knot) > 2)
                         {
                             Knot.x += Math.Sign(Last.x - Knot.x);
                             Knot.y += Math.Sign(Last.y - Knot.y);
@@ -95,10 +91,11 @@ namespace Advent2022
                         {
                             Knot.y += Math.Sign(Last.y - Knot.y);
                         }
-                        if (i2 == Tail.Count - 1 && !VisistedPositions.Contains(Knot))
-                        {
-                            VisistedPositions.Add(new Coordinate(Knot));
-                        }
+                        Last = Knot;
+                    }
+                    if (!VisistedPositions.Contains(Tail.Last()))
+                    {
+                        VisistedPositions.Add(new Coordinate(Tail.Last()));
                     }
                 }
             }
