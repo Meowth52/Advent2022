@@ -112,6 +112,7 @@ namespace Advent2022
                     break;
                 case 10:
                     ReturnDay = new Day10(_input);
+                    ReturnDay.SetMainView(_mainView);
                     break;
                 case 11:
                     ReturnDay = new Day11(_input);
