@@ -18,7 +18,7 @@ namespace Advent2022
             Input = Input.Replace("A", "X");
             Input = Input.Replace("B", "Y");
             Input = Input.Replace("C", "Z");
-            Instructions = this.ParseListOfStringArrays2(Input);
+            Instructions = this.ParseListOfStringArraysLineSpace(Input);
             MaterialValue = new Dictionary<string, int>()
             {
                 {"X", 1},

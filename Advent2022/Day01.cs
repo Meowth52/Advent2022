@@ -13,7 +13,7 @@ namespace Advent2022
         public Day01(string _input) : base(_input)
         {
             string Input = this.CheckFile(_input);
-            List< string[]> hepp = this.ParseListOfStringArrays(Input);
+            List< string[]> hepp = this.ParseListOfStringArraysLineLine(Input);
             Snacks = new List<List<int>>();
             foreach (string[] elf in hepp)
             {

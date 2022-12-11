@@ -13,7 +13,7 @@ namespace Advent2022
         public Day09(string _input) : base(_input)
         {
             string Input = this.CheckFile(_input);
-            Instructions = this.ParseListOfStringArrays2(Input);
+            Instructions = this.ParseListOfStringArraysLineSpace(Input);
         }
         public override Tuple<string, string> GetResult()
         {

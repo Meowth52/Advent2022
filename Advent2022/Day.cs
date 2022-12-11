@@ -45,7 +45,7 @@ namespace Advent2022
             string Input = input.Replace("\r\n", "_");
             return Input.Split(new[] { '_' }, StringSplitOptions.RemoveEmptyEntries);
         }
-        public List<string[]> ParseListOfStringArrays(string input)
+        public List<string[]> ParseListOfStringArraysLineLine(string input)
         {
             List<string[]> ReturnList = new List<string[]>();
             string[] RawInstructions = input.Split(new[] { "\r\n\r\n" }, StringSplitOptions.RemoveEmptyEntries);
@@ -55,7 +55,7 @@ namespace Advent2022
             }
             return ReturnList;
         }
-        public List<string[]> ParseListOfStringArrays2(string input)
+        public List<string[]> ParseListOfStringArraysLineSpace(string input)
         {
             List<string[]> ReturnList = new List<string[]>();
             string[] RawInstructions = input.Split(new[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries);
