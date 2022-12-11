@@ -36,7 +36,7 @@ namespace Advent2022
                 {
                     while (Monkeys[monkey].Items.Count() > 0)
                     {
-                        (int Monkey, ulong Item) kast = Monkeys[monkey].Throw();
+                        (int Monkey, long Item) kast = Monkeys[monkey].Throw();
                         Monkeys[kast.Monkey].Items.Enqueue(kast.Item);
                     }
                 }
@@ -55,10 +55,16 @@ namespace Advent2022
             long ReturnValue = 0;
             Dictionary<int, Monkey> Monkeys = new Dictionary<int, Monkey>();
             int i = 0;
+            int AllTheDivide = 1;
             foreach (string[] instruction in Instructions)
             {
                 Monkeys.Add(i, new Monkey(instruction, true));
+                AllTheDivide *= Monkeys[i].Test;
                 i++;
+            }
+            foreach(KeyValuePair<int, Monkey> monkey in Monkeys)
+            {
+                monkey.Value.AllTheDivide = AllTheDivide;
             }
             for (i = 0; i < 10000; i++)
             {
@@ -66,7 +72,7 @@ namespace Advent2022
                 {
                     while (Monkeys[monkey].Items.Count() > 0)
                     {
-                        (int Monkey, ulong Item) kast = Monkeys[monkey].Throw();
+                        (int Monkey, long Item) kast = Monkeys[monkey].Throw();
                         Monkeys[kast.Monkey].Items.Enqueue(kast.Item);
                     }
                 }
@@ -82,20 +88,21 @@ namespace Advent2022
         }
         public class Monkey
         {
-            public Queue<ulong> Items;
+            public Queue<long> Items;
             List<string> Operation;
-            ulong Test;
+            public int Test;
             int TrueMonkey;
             int FalseMonkey;
             public int Interactions;
             public bool Part2;
+            public int AllTheDivide;
             public Monkey(string[] constructor, bool part2 = false)
             {
-                Items = new Queue<ulong>();
+                Items = new Queue<long>();
                 MatchCollection Matches = Regex.Matches(constructor[1], @"-?\d+");
                 foreach (Match m in Matches)
                 {
-                    Items.Enqueue((ulong)Int32.Parse(m.Value));
+                    Items.Enqueue((int)Int32.Parse(m.Value));
                 }
                 string[] split = constructor[2].Split(' ');
                 Operation = new List<string>();
@@ -103,23 +110,24 @@ namespace Advent2022
                 Operation.Add(split[split.Length - 2]);
                 Operation.Add(split[split.Length - 1]);
                 split = constructor[3].Split(" ");
-                Test = (ulong)Int32.Parse(split.Last());
+                Test = Int32.Parse(split.Last());
                 split = constructor[4].Split(" ");
                 TrueMonkey = Int32.Parse(split.Last());
                 split = constructor[5].Split(" ");
                 FalseMonkey = Int32.Parse(split.Last());
                 Interactions = 0;
                 Part2 = part2;
+                AllTheDivide=0;
             }
-            public (int Monkey, ulong Item) Throw()
+            public (int Monkey, long Item) Throw()
             {
                 Interactions++;
-                ulong operator1 = Items.Dequeue();
-                ulong operator2;
+                long operator1 = Items.Dequeue();
+                long operator2;
                 if (Operation[2] == "old")
                     operator2 = operator1;
                 else
-                    operator2 = (ulong)Int32.Parse(Operation[2]);
+                    operator2 = Int32.Parse(Operation[2]);
                 switch (Operation[1])
                 {
                     case "+":
@@ -139,9 +147,9 @@ namespace Advent2022
                 }
                 if (!Part2)
                     operator1 /= 3;
-                if (operator1 % 96577 == 0)
-                    operator1 /= 96577;
-                (int Monkey, ulong Item) Returnvalue;
+                else
+                    operator1 %= AllTheDivide;
+                (int Monkey, long Item) Returnvalue;
                 if (operator1 % Test == 0)
                     Returnvalue = (Monkey: TrueMonkey, Item: operator1);
                 else
