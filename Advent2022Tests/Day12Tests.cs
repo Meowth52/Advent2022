@@ -22,7 +22,7 @@ namespace Advent2022.Tests
         public void GetPartTwoTest()
         {
             Day12 day = new Day12("Sabqponm\r\nabcryxxl\r\naccszExk\r\nacctuvwj\r\nabdefghi");
-            Assert.Fail();
+            Assert.AreEqual("29", day.GetPartTwo());
         }
     }
 }

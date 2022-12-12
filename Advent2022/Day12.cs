@@ -46,22 +46,50 @@ namespace Advent2022
         }
         public string GetPartOne()
         {
-            int ReturnValue = 0;
+            int ReturnValue = GetPath(Start);
             return ReturnValue.ToString();
         }
         public string GetPartTwo()
         {
-            int ReturnValue = 0;
-
+            int ReturnValue = HeightMap.Count();
+            foreach (Coordinate c in HeightMap.Where(x => x.Value == 0).Select(x => x.Key))
+            {
+                int herp = GetPath(c);
+                if (herp < ReturnValue)
+                    ReturnValue = herp;
+            }
             return ReturnValue.ToString();
         }
-        public class CooSchmordinate : Coordinate
+        public int GetPath(Coordinate Start)
         {
-            int Height;
-            public CooSchmordinate(int x, int y, int h) : base(x, y)
+            int ReturnValue = HeightMap.Count();
+            HashSet<Coordinate> Visited = new HashSet<Coordinate>();
+            HashSet<Coordinate> GoingToVisit = new HashSet<Coordinate>();
+            Queue<KeyValuePair<Coordinate, int>> Paths = new Queue<KeyValuePair<Coordinate, int>>();
+            Paths.Enqueue(new KeyValuePair<Coordinate, int>(Start, 1));
+            List<int> Winners = new List<int>();
+            while (Paths.Count > 0)
             {
-                Height = h;
+                KeyValuePair<Coordinate, int> herp = Paths.Dequeue();
+                Coordinate Current = herp.Key;
+                int CurrentNumber = herp.Value + 1;
+                List<Coordinate> Neihbours = Current.GetNeihbours();
+                Visited.Add(Current);
+                foreach (Coordinate n in Neihbours)
+                {
+                    if (HeightMap.ContainsKey(n) && HeightMap[n] <= HeightMap[Current] + 1 && !Visited.Contains(n) && !GoingToVisit.Contains(n))
+                    {
+                        GoingToVisit.Add(n);
+                        Paths.Enqueue(new KeyValuePair<Coordinate, int>(n, CurrentNumber));
+                        if (n.Equals(End))
+                        {
+                            ReturnValue = CurrentNumber - 1;
+                        }
+                    }
+                }
             }
+            return ReturnValue;
+
         }
     }
 }
