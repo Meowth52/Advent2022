@@ -46,27 +46,25 @@ namespace Advent2022
         }
         public string GetPartOne()
         {
-            int ReturnValue = GetPath(Start);
+            List<Coordinate> start = new List<Coordinate>();
+            start.Add(Start);
+            int ReturnValue = GetPath(start);
             return ReturnValue.ToString();
         }
         public string GetPartTwo()
         {
             int ReturnValue = HeightMap.Count();
-            foreach (Coordinate c in HeightMap.Where(x => x.Value == 0).Select(x => x.Key))
-            {
-                int herp = GetPath(c);
-                if (herp < ReturnValue)
-                    ReturnValue = herp;
-            }
+            ReturnValue = GetPath(HeightMap.Where(x => x.Value == 0).Select(x => x.Key).ToList());
             return ReturnValue.ToString();
         }
-        public int GetPath(Coordinate Start)
+        public int GetPath(List<Coordinate> Start)
         {
             int ReturnValue = HeightMap.Count();
             HashSet<Coordinate> Visited = new HashSet<Coordinate>();
             HashSet<Coordinate> GoingToVisit = new HashSet<Coordinate>();
             Queue<KeyValuePair<Coordinate, int>> Paths = new Queue<KeyValuePair<Coordinate, int>>();
-            Paths.Enqueue(new KeyValuePair<Coordinate, int>(Start, 1));
+            foreach (Coordinate c in Start)
+                Paths.Enqueue(new KeyValuePair<Coordinate, int>(c, 1));
             List<int> Winners = new List<int>();
             while (Paths.Count > 0)
             {
