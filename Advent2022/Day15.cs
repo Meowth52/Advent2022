@@ -111,42 +111,55 @@ namespace Advent2022
             foreach (Coordinate c in remove)
                 Sensors.Remove(c);
             HashSet<Coordinate> mhm = new HashSet<Coordinate>();
+
             foreach (KeyValuePair<Coordinate, int> sensor in Sensors)
             {
-                foreach (KeyValuePair<Coordinate, int> sensor2 in Sensors)
+                List<Coordinate> corners = new List<Coordinate>();
+                corners.Add(new Coordinate(sensor.Key.GetSum(new Coordinate(0, sensor.Value))));
+                corners.Add(new Coordinate(sensor.Key.GetSum(new Coordinate(0, -sensor.Value))));
+                corners.Add(new Coordinate(sensor.Key.GetSum(new Coordinate(sensor.Value, 0))));
+                corners.Add(new Coordinate(sensor.Key.GetSum(new Coordinate(-sensor.Value, 0))));
+                for (int i = 0; i < corners.Count; i++)
                 {
-                    if (sensor.Key.ManhattanDistance(sensor2.Key) > sensor.Value + sensor2.Value)
-                    {
-                        Coordinate direction = new Coordinate(Math.Sign(sensor.Key.x - sensor2.Key.x), Math.Sign(sensor.Key.y - sensor2.Key.y));
-                        Coordinate move = new Coordinate(sensor2.Key);
-                        if (sensor.Value > sensor2.Value)
-                        {
-                            while (sensor.Key.ManhattanDistance(move) > sensor.Value)
-                            {
-                                move.AddTo(direction);
-                            }
-                            Coordinate NewDirection = new Coordinate(direction.x, direction.y * -1);
-                            Coordinate move2 = new Coordinate(move);
-                            while (sensor2.Key.ManhattanDistance(move2) < sensor2.Value)
-                            {
-                                if (move2.IsInPositiveBounds(4000000, 4000000))
-                                    move2.AddTo(direction);
-                                else break;
-                            }
-                            mhm.Add(move2);
-                            NewDirection = new Coordinate(direction.x * -1, direction.y);
-                            move2 = new Coordinate(move);
-                            while (sensor2.Key.ManhattanDistance(move2) < sensor2.Value)
-                            {
-                                if (move2.IsInPositiveBounds(4000000, 4000000))
-                                    move2.AddTo(direction);
-                                else break;
-                            }
-                        }
-
-                    }
+                    for (int x = corners[0].x; x < corners)
                 }
             }
+            //foreach (KeyValuePair<Coordinate, int> sensor in Sensors)
+            //{
+            //    foreach (KeyValuePair<Coordinate, int> sensor2 in Sensors)
+            //    {
+            //        if (sensor.Key.ManhattanDistance(sensor2.Key) > sensor.Value + sensor2.Value)
+            //        {
+            //            Coordinate direction = new Coordinate(Math.Sign(sensor.Key.x - sensor2.Key.x), Math.Sign(sensor.Key.y - sensor2.Key.y));
+            //            Coordinate move = new Coordinate(sensor2.Key);
+            //            if (sensor.Value > sensor2.Value)
+            //            {
+            //                while (sensor.Key.ManhattanDistance(move) > sensor.Value)
+            //                {
+            //                    move.AddTo(direction);
+            //                }
+            //                Coordinate NewDirection = new Coordinate(direction.x, direction.y * -1);
+            //                Coordinate move2 = new Coordinate(move);
+            //                while (sensor2.Key.ManhattanDistance(move2) < sensor2.Value)
+            //                {
+            //                    if (move2.IsInPositiveBounds(4000000, 4000000))
+            //                        move2.AddTo(direction);
+            //                    else break;
+            //                }
+            //                mhm.Add(move2);
+            //                NewDirection = new Coordinate(direction.x * -1, direction.y);
+            //                move2 = new Coordinate(move);
+            //                while (sensor2.Key.ManhattanDistance(move2) < sensor2.Value)
+            //                {
+            //                    if (move2.IsInPositiveBounds(4000000, 4000000))
+            //                        move2.AddTo(direction);
+            //                    else break;
+            //                }
+            //            }
+
+            //        }
+            //    }
+            //}
             foreach (Coordinate mmm in mhm)
             {
                 List<Coordinate> MaybeNotSpotOn = mmm.GetNeihbours();
