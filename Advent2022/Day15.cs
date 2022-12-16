@@ -119,9 +119,33 @@ namespace Advent2022
                 corners.Add(new Coordinate(sensor.Key.GetSum(new Coordinate(0, -sensor.Value))));
                 corners.Add(new Coordinate(sensor.Key.GetSum(new Coordinate(sensor.Value, 0))));
                 corners.Add(new Coordinate(sensor.Key.GetSum(new Coordinate(-sensor.Value, 0))));
-                for (int i = 0; i < corners.Count; i++)
+                Coordinate Direction = new Coordinate(-1, -1);
+                Coordinate Move = new Coordinate(corners[0]);
+                while (!Move.Equals(corners[3]))
                 {
-                    for (int x = corners[0].x; x < corners)
+                    mhm.Add(new Coordinate(Move));
+                    Move.AddTo(Direction);
+                }
+                Direction = new Coordinate(1, -1);
+                Move = new Coordinate(corners[3]);
+                while (!Move.Equals(corners[1]))
+                {
+                    mhm.Add(new Coordinate(Move));
+                    Move.AddTo(Direction);
+                }
+                Direction = new Coordinate(1, 1);
+                Move = new Coordinate(corners[1]);
+                while (!Move.Equals(corners[2]))
+                {
+                    mhm.Add(new Coordinate(Move));
+                    Move.AddTo(Direction);
+                }
+                Direction = new Coordinate(-1, 1);
+                Move = new Coordinate(corners[2]);
+                while (!Move.Equals(corners[0]))
+                {
+                    mhm.Add(new Coordinate(Move));
+                    Move.AddTo(Direction);
                 }
             }
             //foreach (KeyValuePair<Coordinate, int> sensor in Sensors)
@@ -160,25 +184,27 @@ namespace Advent2022
             //        }
             //    }
             //}
+            HashSet<Coordinate> MaybeNotSpotOn = new HashSet<Coordinate>();
             foreach (Coordinate mmm in mhm)
             {
-                List<Coordinate> MaybeNotSpotOn = mmm.GetNeihbours();
-                bool WillItMakeIt = true;
-                foreach (Coordinate c in MaybeNotSpotOn)
+                foreach (Coordinate c in mmm.GetNeihbours())
+                    MaybeNotSpotOn.Add(c);
+            }
+            bool WillItMakeIt = true;
+            foreach (Coordinate c in MaybeNotSpotOn)
+            {
+                foreach (KeyValuePair<Coordinate, int> sensor in Sensors)
                 {
-                    foreach (KeyValuePair<Coordinate, int> sensor in Sensors)
+                    if (sensor.Key.ManhattanDistance(c) <= sensor.Value || Beacons.Contains(c))
                     {
-                        if (sensor.Key.ManhattanDistance(c) <= sensor.Value || Beacons.Contains(c))
-                        {
-                            WillItMakeIt = false;
-                            break;
-                        }
+                        WillItMakeIt = false;
+                        break;
                     }
-                    if (WillItMakeIt)
-                    {
-                        ReturnValue = c.x * 4000000 + c.y;
-                        return ReturnValue.ToString();
-                    }
+                }
+                if (WillItMakeIt)
+                {
+                    ReturnValue = c.x * 4000000 + c.y;
+                    //return ReturnValue.ToString();
                 }
             }
             return ReturnValue.ToString();
