@@ -94,31 +94,15 @@ namespace Advent2022
                 Sensors.Add(c, distance);
                 Beacons.Add(b);
             }
-            HashSet<Coordinate> remove = new HashSet<Coordinate>();
-            foreach (string s in Instructions)
-            {
-                List<int> numbers = this.ParseListOfInteger(s);
-                Coordinate c = new Coordinate(numbers[0], numbers[1]);
-                Coordinate b = new Coordinate(numbers[2], numbers[3]);
-                foreach (KeyValuePair<Coordinate, int> k in Sensors)
-                {
-                    if (!k.Key.Equals(c) && k.Key.ManhattanDistance(c) <= k.Value && k.Key.ManhattanDistance(b) <= k.Value)
-                    {
-                        remove.Add(c);
-                    }
-                }
-            }
-            foreach (Coordinate c in remove)
-                Sensors.Remove(c);
-            HashSet<Coordinate> mhm = new HashSet<Coordinate>();
+            List<Coordinate> mhm = new List<Coordinate>();
 
             foreach (KeyValuePair<Coordinate, int> sensor in Sensors)
             {
                 List<Coordinate> corners = new List<Coordinate>();
-                corners.Add(new Coordinate(sensor.Key.GetSum(new Coordinate(0, sensor.Value))));
-                corners.Add(new Coordinate(sensor.Key.GetSum(new Coordinate(0, -sensor.Value))));
-                corners.Add(new Coordinate(sensor.Key.GetSum(new Coordinate(sensor.Value, 0))));
-                corners.Add(new Coordinate(sensor.Key.GetSum(new Coordinate(-sensor.Value, 0))));
+                corners.Add(new Coordinate(sensor.Key.GetSum(new Coordinate(0, sensor.Value + 1))));
+                corners.Add(new Coordinate(sensor.Key.GetSum(new Coordinate(0, -sensor.Value - 1))));
+                corners.Add(new Coordinate(sensor.Key.GetSum(new Coordinate(sensor.Value + 1, 0))));
+                corners.Add(new Coordinate(sensor.Key.GetSum(new Coordinate(-sensor.Value - 1, 0))));
                 Coordinate Direction = new Coordinate(-1, -1);
                 Coordinate Move = new Coordinate(corners[0]);
                 while (!Move.Equals(corners[3]))
@@ -148,63 +132,24 @@ namespace Advent2022
                     Move.AddTo(Direction);
                 }
             }
-            //foreach (KeyValuePair<Coordinate, int> sensor in Sensors)
-            //{
-            //    foreach (KeyValuePair<Coordinate, int> sensor2 in Sensors)
-            //    {
-            //        if (sensor.Key.ManhattanDistance(sensor2.Key) > sensor.Value + sensor2.Value)
-            //        {
-            //            Coordinate direction = new Coordinate(Math.Sign(sensor.Key.x - sensor2.Key.x), Math.Sign(sensor.Key.y - sensor2.Key.y));
-            //            Coordinate move = new Coordinate(sensor2.Key);
-            //            if (sensor.Value > sensor2.Value)
-            //            {
-            //                while (sensor.Key.ManhattanDistance(move) > sensor.Value)
-            //                {
-            //                    move.AddTo(direction);
-            //                }
-            //                Coordinate NewDirection = new Coordinate(direction.x, direction.y * -1);
-            //                Coordinate move2 = new Coordinate(move);
-            //                while (sensor2.Key.ManhattanDistance(move2) < sensor2.Value)
-            //                {
-            //                    if (move2.IsInPositiveBounds(4000000, 4000000))
-            //                        move2.AddTo(direction);
-            //                    else break;
-            //                }
-            //                mhm.Add(move2);
-            //                NewDirection = new Coordinate(direction.x * -1, direction.y);
-            //                move2 = new Coordinate(move);
-            //                while (sensor2.Key.ManhattanDistance(move2) < sensor2.Value)
-            //                {
-            //                    if (move2.IsInPositiveBounds(4000000, 4000000))
-            //                        move2.AddTo(direction);
-            //                    else break;
-            //                }
-            //            }
-
-            //        }
-            //    }
-            //}
-            HashSet<Coordinate> MaybeNotSpotOn = new HashSet<Coordinate>();
-            foreach (Coordinate mmm in mhm)
+            foreach (Coordinate c in mhm)
             {
-                foreach (Coordinate c in mmm.GetNeihbours())
-                    MaybeNotSpotOn.Add(c);
-            }
-            bool WillItMakeIt = true;
-            foreach (Coordinate c in MaybeNotSpotOn)
-            {
-                foreach (KeyValuePair<Coordinate, int> sensor in Sensors)
+                if (c.IsInPositiveBounds(HighestX, Highesty))
                 {
-                    if (sensor.Key.ManhattanDistance(c) <= sensor.Value || Beacons.Contains(c))
+                    bool WillItMakeIt = true;
+                    foreach (KeyValuePair<Coordinate, int> sensor in Sensors)
                     {
-                        WillItMakeIt = false;
-                        break;
+                        if (sensor.Key.ManhattanDistance(c) <= sensor.Value || Beacons.Contains(c))
+                        {
+                            WillItMakeIt = false;
+                            break;
+                        }
                     }
-                }
-                if (WillItMakeIt)
-                {
-                    ReturnValue = c.x * 4000000 + c.y;
-                    //return ReturnValue.ToString();
+                    if (WillItMakeIt)
+                    {
+                        ReturnValue = checked((long)c.x * 4000000 + (long)c.y);
+                        return ReturnValue.ToString();
+                    }
                 }
             }
             return ReturnValue.ToString();
