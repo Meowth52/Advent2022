@@ -37,11 +37,11 @@ namespace Advent2022
         {
             int ReturnValue = 0;
             int Rate = 0;
-            Queue<char> tunnels = new Queue<char>();
+            Dictionary<char, int> tunnels = new Dictionary<char, int>();
             tunnels.Enqueue('A');
             for (int i = 1; i <= 30; i++)
             {
-                Queue<char> NextTunnels = new Queue<char>();
+                Dictionary<char, int> NextTunnels = new Dictionary<char, int>();
                 foreach (char t in tunnels)
                 {
                     ReturnValue += Rate;
