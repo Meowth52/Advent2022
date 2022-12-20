@@ -38,26 +38,26 @@ namespace Advent2022
             int ReturnValue = 0;
             int Rate = 0;
             Dictionary<char, int> tunnels = new Dictionary<char, int>();
-            tunnels.Enqueue('A');
-            for (int i = 1; i <= 30; i++)
-            {
-                Dictionary<char, int> NextTunnels = new Dictionary<char, int>();
-                foreach (char t in tunnels)
-                {
-                    ReturnValue += Rate;
-                    Valve v = Valves[t];
-                    if (v.Rate > 0)
-                    {
-                        Rate += v.Rate;
-                        v.Rate = 0;
-                        foreach (char r in v.Routes)
-                            NextTunnels.Enqueue(r);
-                    }
-                    foreach (char r in v.Routes)
-                        NextTunnels.Enqueue(r);
-                }
-                tunnels = new Queue<char>(NextTunnels);
-            }
+            //tunnels.Enqueue('A');
+            //for (int i = 1; i <= 30; i++)
+            //{
+            //    Dictionary<char, int> NextTunnels = new Dictionary<char, int>();
+            //    foreach (char t in tunnels)
+            //    {
+            //        ReturnValue += Rate;
+            //        Valve v = Valves[t];
+            //        if (v.Rate > 0)
+            //        {
+            //            Rate += v.Rate;
+            //            v.Rate = 0;
+            //            foreach (char r in v.Routes)
+            //                NextTunnels.Enqueue(r);
+            //        }
+            //        foreach (char r in v.Routes)
+            //            NextTunnels.Enqueue(r);
+            //    }
+            //    tunnels = new Queue<char>(NextTunnels);
+            //}
             return ReturnValue.ToString();
         }
         public string GetPartTwo()
