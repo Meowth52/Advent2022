@@ -23,15 +23,20 @@ namespace Advent2022
         {
             int ReturnValue = 0;
             int count = Instructions.Count - 1;
+            Dictionary<int,int> JävlaOunikaSkitNummer= new Dictionary<int,int>();
+            foreach(int prupp in Instructions)
+            {
+                JävlaOunikaSkitNummer.Add(prupp, prupp);
+            }
             List<int> Move = new List<int>(Instructions);
             int i = 0;
             //for (int i = 0; i <= 3000;)
             //{
-            foreach (int n in Instructions)
+            foreach (KeyValuePair<int,int> n in JävlaOunikaSkitNummer)
             {
-                int index = Move.IndexOf(n);
+                int index = JävlaOunikaSkitNummer[n.Value];
                 //index = index % count ;
-                int newIndex = index + n;
+                int newIndex = index + Instructions[n.Key];
                 newIndex %= count;
                 if (newIndex < 0)
                     newIndex += count;
@@ -57,7 +62,7 @@ namespace Advent2022
             ReturnValue += Move[(schmindex + 2000) % Instructions.Count()];
             ReturnValue += Move[(schmindex + 3000) % Instructions.Count()];
             //}
-            jjjreturn ReturnValue.ToString();
+            return ReturnValue.ToString();
         }
         public string GetPartTwo()
         {
