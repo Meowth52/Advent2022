@@ -57,7 +57,7 @@ namespace Advent2022
             ReturnValue += Move[(schmindex + 2000) % Instructions.Count()];
             ReturnValue += Move[(schmindex + 3000) % Instructions.Count()];
             //}
-            return ReturnValue.ToString();
+            jreturn ReturnValue.ToString();
         }
         public string GetPartTwo()
         {
