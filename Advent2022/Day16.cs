@@ -26,7 +26,7 @@ namespace Advent2022
                 {
                     routes.Add(split[i][0]);
                 }
-                Valves.Add(split[1][0], new Valve(flow, routes));
+                Valves.Add(split[1][0], new Valve(split[1][0], flow, routes));
             }
         }
         public override Tuple<string, string> GetResult()
@@ -37,27 +37,43 @@ namespace Advent2022
         {
             int ReturnValue = 0;
             int Rate = 0;
-            Dictionary<char, int> tunnels = new Dictionary<char, int>();
-            //tunnels.Enqueue('A');
-            //for (int i = 1; i <= 30; i++)
-            //{
-            //    Dictionary<char, int> NextTunnels = new Dictionary<char, int>();
-            //    foreach (char t in tunnels)
-            //    {
-            //        ReturnValue += Rate;
-            //        Valve v = Valves[t];
-            //        if (v.Rate > 0)
-            //        {
-            //            Rate += v.Rate;
-            //            v.Rate = 0;
-            //            foreach (char r in v.Routes)
-            //                NextTunnels.Enqueue(r);
-            //        }
-            //        foreach (char r in v.Routes)
-            //            NextTunnels.Enqueue(r);
-            //    }
-            //    tunnels = new Queue<char>(NextTunnels);
-            //}
+            List<Valve> tunnels = new List<Valve>();
+
+            tunnels.Add(new Valve(Valves['A']));
+            for (int i = 1; i <= 30; i++)
+            {
+                List<Valve> NextTunnels = new List<Valve>();
+                foreach (Valve v in tunnels)
+                {
+                    if (v.TurnsFLowing == 0)
+                    {
+                        v.TurnsFLowing = 30 - i;
+                        foreach (char r in v.Routes)
+                        {
+                            if (!v.Visited.ContainsKey(r) || v.Visited[r].TurnsFLowing > 0)
+                            {
+                                Valve Next = new Valve(Valves[r]);
+                                Next.Visited = v.Visited;
+                                if (!v.Visited.ContainsKey(v.Name))
+                                    Next.Visited.Add(v.Name, v);
+                                NextTunnels.Add(Next);
+                            }
+                        }
+                    }
+                    foreach (char r in v.Routes)
+                    {
+                        if (!v.Visited.ContainsKey(r) || v.Visited[r].TurnsFLowing > 0)
+                        {
+                            Valve Next = new Valve(Valves[r]);
+                            Next.Visited = v.Visited;
+                            if (!v.Visited.ContainsKey(v.Name))
+                                Next.Visited.Add(v.Name, v);
+                            NextTunnels.Add(Next);
+                        }
+                    }
+                }
+                tunnels = new List<Valve>(NextTunnels);
+            }
             return ReturnValue.ToString();
         }
         public string GetPartTwo()
@@ -68,12 +84,33 @@ namespace Advent2022
         }
         public class Valve
         {
+            public char Name;
             public int Rate;
+            public int TurnsFLowing;
             public List<char> Routes;
-            public Valve(int rate, List<char> routes)
+            public Dictionary<char, Valve> Visited;
+            public Valve(char name, int rate, List<char> routes)
             {
+                Name = name;
                 Rate = rate;
                 Routes = routes;
+                Visited = new Dictionary<char, Valve>();
+                TurnsFLowing = 0;
+            }
+            public Valve(Valve v)
+            {
+                Name = v.Name;
+                Rate = v.Rate;
+                Routes = v.Routes;
+                Visited = new Dictionary<char, Valve>(v.Visited);
+                TurnsFLowing = 0;
+            }
+            public int GetFlowed()
+            {
+                int ReturnValue = Rate * TurnsFLowing;
+                foreach (KeyValuePair<char, Valve> v in Visited)
+                    ReturnValue += v.Value.Rate * v.Value.TurnsFLowing;
+                return ReturnValue;
             }
         }
     }
