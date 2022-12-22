@@ -22,53 +22,135 @@ namespace Advent2022
         public string GetPartOne()
         {
             int ReturnValue = 0;
+            //StringBuilder debug = new StringBuilder();
             int count = Instructions.Count - 1;
-            Dictionary<int, int> JävlaOunikaSkitNummer = new Dictionary<int, int>();
+            Dictionary<int, Schmenum> JävlaOunikaSkitNummer = new Dictionary<int, Schmenum>();
             for (int fi = 0; fi < Instructions.Count(); fi++)
             {
-                JävlaOunikaSkitNummer.Add(fi, fi);
+                JävlaOunikaSkitNummer.Add(fi, new Schmenum(fi, Instructions[fi]));
             }
-            List<int> Move = new List<int>(Instructions);
-            int i = 0;
-            //for (int i = 0; i <= 3000;)
-            //{
-            foreach (KeyValuePair<int, int> n in JävlaOunikaSkitNummer)
+            for (int i = 0; i <= count; i++)
             {
-                int index = JävlaOunikaSkitNummer[n.Value];
-                //index = index % count ;
-                int newIndex = index + Instructions[n.Key];
+                Schmenum n = JävlaOunikaSkitNummer[i];
+                int index = n.CurrentPosition;
+                int newIndex = index + n.Value;
                 newIndex %= count;
                 if (newIndex < 0)
                     newIndex += count;
                 if (newIndex >= count)
                     newIndex -= count;
-                Move.Remove(JävlaOunikaSkitNummer[n.Value]);
-                //if (newIndex < index)
-                //    newIndex++;
-                //if (newIndex == count + 1)
-                //    newIndex = 0;
+                JävlaOunikaSkitNummer[i].CurrentPosition = -1;
+                foreach (KeyValuePair<int, Schmenum> pair in JävlaOunikaSkitNummer)
+                    if (pair.Value.CurrentPosition > index)
+                        pair.Value.CurrentPosition--;
                 if (newIndex == 0)
                     newIndex = count;
-                JävlaOunikaSkitNummer[n.Value] = newIndex;
-                Move.Insert(newIndex, Instructions[n.Key]);
-                i++;
-                //if (i % 1000 == 0)
+                foreach (KeyValuePair<int, Schmenum> pair in JävlaOunikaSkitNummer)
+                    if (pair.Value.CurrentPosition >= newIndex)
+                        pair.Value.CurrentPosition++;
+                JävlaOunikaSkitNummer[i].CurrentPosition = newIndex;
+                //StringBuilder row = new StringBuilder();
+                //for (int s = 0; s <= count; s++)
                 //{
-
+                //    foreach (KeyValuePair<int, Schmenum> e in JävlaOunikaSkitNummer)
+                //        if (e.Value.CurrentPosition == s)
+                //            row.Append(e.Value.Value.ToString() + ", ");
                 //}
+                //row.Append("\r\n");
+                //debug.Append(row.ToString());
             }
-            int schmindex = Move.IndexOf(0);
+            int schmindex = 0;
+            Dictionary<int, Schmenum> Result = new Dictionary<int, Schmenum>();
+            foreach (KeyValuePair<int, Schmenum> k in JävlaOunikaSkitNummer)
+            {
+                Result.Add(k.Value.CurrentPosition, new Schmenum(k.Value));
+                if (k.Value.Value == 0)
+                    schmindex = k.Value.CurrentPosition;
+            }
+            ReturnValue += Result[(schmindex + 1000) % Instructions.Count()].Value;
+            ReturnValue += Result[(schmindex + 2000) % Instructions.Count()].Value;
+            ReturnValue += Result[(schmindex + 3000) % Instructions.Count()].Value;
 
-            ReturnValue += Move[(schmindex + 1000) % Instructions.Count()];
-            ReturnValue += Move[(schmindex + 2000) % Instructions.Count()];
-            ReturnValue += Move[(schmindex + 3000) % Instructions.Count()];
-            //}
+            //return debug.ToString() + "\r\n" + ReturnValue.ToString();
             return ReturnValue.ToString();
         }
         public string GetPartTwo()
         {
-            int ReturnValue = 0;
+            long ReturnValue = 0;
+            int DecryptionKey = 811589153;
+            //StringBuilder debug = new StringBuilder();
+            int count = Instructions.Count - 1;
+            Dictionary<int, Schmenum> JävlaOunikaSkitNummer = new Dictionary<int, Schmenum>();
+            for (int fi = 0; fi < Instructions.Count(); fi++)
+            {
+                JävlaOunikaSkitNummer.Add(fi, new Schmenum(fi, Instructions[fi]));
+            }
+            for (int b = 0; b < 10; b++)
+            {
+                for (int i = 0; i <= count; i++)
+                {
+                    Schmenum n = JävlaOunikaSkitNummer[i];
+                    int index = n.CurrentPosition;
+                    long longValue = ((long)n.Value * (long)DecryptionKey) % count;
+                    int newIndex = index + (int)longValue;
+                    newIndex %= count;
+                    if (newIndex < 0)
+                        newIndex += count;
+                    if (newIndex >= count)
+                        newIndex -= count;
+                    JävlaOunikaSkitNummer[i].CurrentPosition = -1;
+                    foreach (KeyValuePair<int, Schmenum> pair in JävlaOunikaSkitNummer)
+                        if (pair.Value.CurrentPosition > index)
+                            pair.Value.CurrentPosition--;
+                    if (newIndex == 0)
+                        newIndex = count;
+                    foreach (KeyValuePair<int, Schmenum> pair in JävlaOunikaSkitNummer)
+                        if (pair.Value.CurrentPosition >= newIndex)
+                            pair.Value.CurrentPosition++;
+                    JävlaOunikaSkitNummer[i].CurrentPosition = newIndex;
+                    //StringBuilder row = new StringBuilder();
+                    //for (int s = 0; s <= count; s++)
+                    //{
+                    //    foreach (KeyValuePair<int, Schmenum> e in JävlaOunikaSkitNummer)
+                    //        if (e.Value.CurrentPosition == s)
+                    //            row.Append(e.Value.Value.ToString() + ", ");
+                    //}
+                    //row.Append("\r\n");
+                    //debug.Append(row.ToString());
+                }
+            }
+            int schmindex = 0;
+            Dictionary<int, Schmenum> Result = new Dictionary<int, Schmenum>();
+            foreach (KeyValuePair<int, Schmenum> k in JävlaOunikaSkitNummer)
+            {
+                Result.Add(k.Value.CurrentPosition, new Schmenum(k.Value));
+                if (k.Value.Value == 0)
+                    schmindex = k.Value.CurrentPosition;
+            }
+            ReturnValue += Result[(schmindex + 1000) % Instructions.Count()].Value;
+            ReturnValue += Result[(schmindex + 2000) % Instructions.Count()].Value;
+            ReturnValue += Result[(schmindex + 3000) % Instructions.Count()].Value;
+            ReturnValue *= DecryptionKey;
+            //return debug.ToString() + "\r\n" + ReturnValue.ToString();
             return ReturnValue.ToString();
+        }
+        public class Schmenum
+        {
+            public int Value;
+            public int OriginalPosition;
+            public int CurrentPosition;
+            public Schmenum(int position, int value)
+            {
+                Value = value;
+                OriginalPosition = position;
+                CurrentPosition = position;
+            }
+            public Schmenum(Schmenum sch)
+            {
+                Value = sch.Value;
+                OriginalPosition = sch.OriginalPosition;
+                CurrentPosition = sch.CurrentPosition;
+            }
         }
     }
 }
