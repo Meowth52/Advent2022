@@ -12,14 +12,18 @@ namespace Advent2022
     {
         string[] Instructions;
         Dictionary<char, Valve> Valves;
+        int Maxflow;
         public Day16(string _input) : base(_input)
         {
             string Input = this.CheckFile(_input);
             Instructions = this.ParseStringArray(Input);
             Valves = new Dictionary<char, Valve>();
+            Maxflow = 0;
             foreach (string s in Instructions)
             {
                 int flow = this.ParseListOfInteger(s).First();
+                if (flow > Maxflow)
+                    Maxflow = flow;
                 string[] split = s.Split(' ');
                 List<char> routes = new List<char>();
                 for (int i = 9; i < split.Length; i++)
@@ -36,7 +40,6 @@ namespace Advent2022
         public string GetPartOne()
         {
             int ReturnValue = 0;
-            int Rate = 0;
             List<Valve> tunnels = new List<Valve>();
 
             tunnels.Add(new Valve(Valves['A']));
@@ -45,30 +48,46 @@ namespace Advent2022
                 List<Valve> NextTunnels = new List<Valve>();
                 foreach (Valve v in tunnels)
                 {
-                    if (v.TurnsFLowing == 0)
+                    if (v.Flow == 0)
                     {
-                        v.TurnsFLowing = 30 - i;
-                        foreach (char r in v.Routes)
+                        if (v.Rate < (Maxflow / 2))
                         {
-                            if (!v.Visited.ContainsKey(r) || v.Visited[r].TurnsFLowing > 0)
+                            foreach (char r in v.Routes)
                             {
-                                Valve Next = new Valve(Valves[r]);
-                                Next.Visited = v.Visited;
-                                if (!v.Visited.ContainsKey(v.Name))
-                                    Next.Visited.Add(v.Name, v);
-                                NextTunnels.Add(Next);
+                                if (v.Visited.Count == 0 || v.Visited.Last().Name != r || v.Routes.Count() == 1)
+                                {
+                                    Valve Next = new Valve(Valves[r]);
+                                    if (v.Visited.Count > 0 && v.Visited.Last().Routes.Count == 1)
+                                    {
+                                        Next.Routes.Remove(v.Visited.Last().Name);
+                                    }
+                                    Next.Visited = v.Visited;
+                                    Next.Visited.Add(v);
+                                    NextTunnels.Add(Next);
+                                }
                             }
                         }
-                    }
-                    foreach (char r in v.Routes)
-                    {
-                        if (!v.Visited.ContainsKey(r) || v.Visited[r].TurnsFLowing > 0)
+                        if (v.Rate > 0)
                         {
-                            Valve Next = new Valve(Valves[r]);
-                            Next.Visited = v.Visited;
-                            if (!v.Visited.ContainsKey(v.Name))
-                                Next.Visited.Add(v.Name, v);
-                            NextTunnels.Add(Next);
+                            v.Flow = v.Rate * (30 - i);
+                            NextTunnels.Add(v);
+                        }
+                    }
+                    else
+                    {
+                        foreach (char r in v.Routes)
+                        {
+                            if (v.Visited.Count == 0 || v.Visited.Last().Name != r || v.Routes.Count() == 1)
+                            {
+                                Valve Next = new Valve(Valves[r]);
+                                if (v.Visited.Count > 0 && v.Visited.Last().Routes.Count == 1)
+                                {
+                                    Next.Routes.Remove(v.Visited.Last().Name);
+                                }
+                                Next.Visited = v.Visited;
+                                Next.Visited.Add(v);
+                                NextTunnels.Add(Next);
+                            }
                         }
                     }
                 }
@@ -86,32 +105,32 @@ namespace Advent2022
         {
             public char Name;
             public int Rate;
-            public int TurnsFLowing;
+            public int Flow;
             public List<char> Routes;
-            public Dictionary<char, Valve> Visited;
+            public List<Valve> Visited;
             public Valve(char name, int rate, List<char> routes)
             {
                 Name = name;
                 Rate = rate;
                 Routes = routes;
-                Visited = new Dictionary<char, Valve>();
-                TurnsFLowing = 0;
+                Visited = new List<Valve>();
+                Flow = 0;
             }
             public Valve(Valve v)
             {
                 Name = v.Name;
                 Rate = v.Rate;
                 Routes = v.Routes;
-                Visited = new Dictionary<char, Valve>(v.Visited);
-                TurnsFLowing = 0;
+                Visited = new List<Valve>(v.Visited);
+                Flow = 0;
             }
-            public int GetFlowed()
-            {
-                int ReturnValue = Rate * TurnsFLowing;
-                foreach (KeyValuePair<char, Valve> v in Visited)
-                    ReturnValue += v.Value.Rate * v.Value.TurnsFLowing;
-                return ReturnValue;
-            }
+            //public int GetFlowed()
+            //{
+            //    int ReturnValue = Rate * Flow;
+            //    foreach (KeyValuePair<char, Valve> v in Visited)
+            //        ReturnValue += v.Value.Rate * v.Value.Flow;
+            //    return ReturnValue;
+            //}
         }
     }
 }
