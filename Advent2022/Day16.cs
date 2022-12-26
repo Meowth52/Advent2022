@@ -13,17 +13,21 @@ namespace Advent2022
         string[] Instructions;
         Dictionary<string, Valve> Valves;
         int Maxflow;
+        int NumberOfOpen;
         public Day16(string _input) : base(_input)
         {
             string Input = this.CheckFile(_input);
             Instructions = this.ParseStringArray(Input);
             Valves = new Dictionary<string, Valve>();
             Maxflow = 0;
+            NumberOfOpen = 0;
             foreach (string s in Instructions)
             {
                 int flow = this.ParseListOfInteger(s).First();
                 if (flow > Maxflow)
                     Maxflow = flow;
+                if (flow > 0)
+                    NumberOfOpen++;
                 string[] split = s.Split(' ');
                 List<string> routes = new List<string>();
                 for (int i = 9; i < split.Length; i++)
@@ -64,7 +68,8 @@ namespace Advent2022
                                     Next.Visited = new List<Valve>(v.Visited);
                                     Next.AddVisit(v);
                                     Next.Flow = v.Flow;
-                                    NextTunnels.Add(new Valve(Next));
+                                    if (Next.OpenValves.Count < NumberOfOpen)
+                                        NextTunnels.Add(new Valve(Next));
                                 }
                             }
                         }
@@ -74,7 +79,12 @@ namespace Advent2022
                             Next.Open = true;
                             Next.OpenValves.Add(Next.Name);
                             Next.Flow += v.Rate * (30 - (i));
-                            NextTunnels.Add(Next);
+                            if (Next.Flow >= ReturnValue)
+                            {
+                                ReturnValue = Next.Flow;
+                            }
+                            if (Next.OpenValves.Count < NumberOfOpen)
+                                NextTunnels.Add(Next);
                         }
                     }
                     else
@@ -91,22 +101,14 @@ namespace Advent2022
                                 Next.Visited = new List<Valve>(v.Visited);
                                 Next.AddVisit(v);
                                 Next.Flow = v.Flow;
-                                NextTunnels.Add(new Valve(Next));
+                                if (Next.OpenValves.Count < NumberOfOpen)
+                                    NextTunnels.Add(new Valve(Next));
                             }
                         }
                     }
                 }
 
                 tunnels = new List<Valve>(NextTunnels);
-            }
-            Valve öhh;
-            foreach (Valve v in tunnels)
-            {
-                if (v.Flow > ReturnValue)
-                {
-                    ReturnValue = v.Flow;
-                    öhh = v;
-                }
             }
             return ReturnValue.ToString();
         }
