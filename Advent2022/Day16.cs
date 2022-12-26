@@ -11,13 +11,13 @@ namespace Advent2022
     public class Day16 : Day
     {
         string[] Instructions;
-        Dictionary<char, Valve> Valves;
+        Dictionary<string, Valve> Valves;
         int Maxflow;
         public Day16(string _input) : base(_input)
         {
             string Input = this.CheckFile(_input);
             Instructions = this.ParseStringArray(Input);
-            Valves = new Dictionary<char, Valve>();
+            Valves = new Dictionary<string, Valve>();
             Maxflow = 0;
             foreach (string s in Instructions)
             {
@@ -25,12 +25,12 @@ namespace Advent2022
                 if (flow > Maxflow)
                     Maxflow = flow;
                 string[] split = s.Split(' ');
-                List<char> routes = new List<char>();
+                List<string> routes = new List<string>();
                 for (int i = 9; i < split.Length; i++)
                 {
-                    routes.Add(split[i][0]);
+                    routes.Add(split[i].Substring(0, 2));
                 }
-                Valves.Add(split[1][0], new Valve(split[1][0], flow, routes));
+                Valves.Add(split[1], new Valve(split[1], flow, routes));
             }
         }
         public override Tuple<string, string> GetResult()
@@ -42,17 +42,17 @@ namespace Advent2022
             int ReturnValue = 0;
             List<Valve> tunnels = new List<Valve>();
 
-            tunnels.Add(new Valve(Valves['A']));
+            tunnels.Add(new Valve(Valves["AA"]));
             for (int i = 1; i <= 30; i++)
             {
                 List<Valve> NextTunnels = new List<Valve>();
                 foreach (Valve v in tunnels)
                 {
-                    if (v.Flow == 0)
+                    if (!v.OpenValves.Contains(v.Name))
                     {
                         if (v.Rate < (Maxflow / 2))
                         {
-                            foreach (char r in v.Routes)
+                            foreach (string r in v.Routes)
                             {
                                 if (v.Visited.Count == 0 || v.Visited.Last().Name != r || v.Routes.Count() == 1)
                                 {
@@ -61,21 +61,25 @@ namespace Advent2022
                                     {
                                         Next.Routes.Remove(v.Visited.Last().Name);
                                     }
-                                    Next.Visited = v.Visited;
-                                    Next.Visited.Add(v);
-                                    NextTunnels.Add(Next);
+                                    Next.Visited = new List<Valve>(v.Visited);
+                                    Next.AddVisit(v);
+                                    Next.Flow = v.Flow;
+                                    NextTunnels.Add(new Valve(Next));
                                 }
                             }
                         }
                         if (v.Rate > 0)
                         {
-                            v.Flow = v.Rate * (30 - i);
-                            NextTunnels.Add(v);
+                            Valve Next = new Valve(v);
+                            Next.Open = true;
+                            Next.OpenValves.Add(Next.Name);
+                            Next.Flow += v.Rate * (30 - (i));
+                            NextTunnels.Add(Next);
                         }
                     }
                     else
                     {
-                        foreach (char r in v.Routes)
+                        foreach (string r in v.Routes)
                         {
                             if (v.Visited.Count == 0 || v.Visited.Last().Name != r || v.Routes.Count() == 1)
                             {
@@ -84,14 +88,25 @@ namespace Advent2022
                                 {
                                     Next.Routes.Remove(v.Visited.Last().Name);
                                 }
-                                Next.Visited = v.Visited;
-                                Next.Visited.Add(v);
-                                NextTunnels.Add(Next);
+                                Next.Visited = new List<Valve>(v.Visited);
+                                Next.AddVisit(v);
+                                Next.Flow = v.Flow;
+                                NextTunnels.Add(new Valve(Next));
                             }
                         }
                     }
                 }
+
                 tunnels = new List<Valve>(NextTunnels);
+            }
+            Valve öhh;
+            foreach (Valve v in tunnels)
+            {
+                if (v.Flow > ReturnValue)
+                {
+                    ReturnValue = v.Flow;
+                    öhh = v;
+                }
             }
             return ReturnValue.ToString();
         }
@@ -103,18 +118,22 @@ namespace Advent2022
         }
         public class Valve
         {
-            public char Name;
+            public string Name;
             public int Rate;
             public int Flow;
-            public List<char> Routes;
+            public bool Open;
+            public List<string> Routes;
             public List<Valve> Visited;
-            public Valve(char name, int rate, List<char> routes)
+            public HashSet<string> OpenValves;
+            public Valve(string name, int rate, List<string> routes)
             {
                 Name = name;
                 Rate = rate;
                 Routes = routes;
                 Visited = new List<Valve>();
                 Flow = 0;
+                Open = false;
+                OpenValves = new HashSet<string>();
             }
             public Valve(Valve v)
             {
@@ -122,15 +141,17 @@ namespace Advent2022
                 Rate = v.Rate;
                 Routes = v.Routes;
                 Visited = new List<Valve>(v.Visited);
-                Flow = 0;
+                Flow = v.Flow;
+                Open = v.Open;
+                OpenValves = new HashSet<string>(v.OpenValves);
             }
-            //public int GetFlowed()
-            //{
-            //    int ReturnValue = Rate * Flow;
-            //    foreach (KeyValuePair<char, Valve> v in Visited)
-            //        ReturnValue += v.Value.Rate * v.Value.Flow;
-            //    return ReturnValue;
-            //}
+            public void AddVisit(Valve v)
+            {
+                OpenValves = new HashSet<string>(v.OpenValves);
+                Valve W = new Valve(v);
+                W.Visited.Clear();
+                Visited.Add(W);
+            }
         }
     }
 }
