@@ -61,15 +61,18 @@ namespace Advent2022
                                 if (v.Visited.Count == 0 || v.Visited.Last().Name != r || v.Routes.Count() == 1)
                                 {
                                     Valve Next = new Valve(Valves[r]);
-                                    if (v.Visited.Count > 0 && v.Visited.Last().Routes.Count == 1)
+                                    //if (v.Visited.Count > 0 && v.Visited.Last().Routes.Count == 1)
+                                    //{
+                                    //    Next.Routes.Remove(v.Visited.Last().Name);
+                                    //}
+                                    if (!v.Visited2.ContainsKey(v.Name) || v.Visited2[v.Name] < 2) // needs to be 3 for test
                                     {
-                                        Next.Routes.Remove(v.Visited.Last().Name);
+                                        Next.Visited = new List<Valve>(v.Visited);
+                                        Next.AddVisit(v);
+                                        Next.Flow = v.Flow;
+                                        if (Next.OpenValves.Count < NumberOfOpen)
+                                            NextTunnels.Add(new Valve(Next));
                                     }
-                                    Next.Visited = new List<Valve>(v.Visited);
-                                    Next.AddVisit(v);
-                                    Next.Flow = v.Flow;
-                                    if (Next.OpenValves.Count < NumberOfOpen)
-                                        NextTunnels.Add(new Valve(Next));
                                 }
                             }
                         }
@@ -94,15 +97,18 @@ namespace Advent2022
                             if (v.Visited.Count == 0 || v.Visited.Last().Name != r || v.Routes.Count() == 1)
                             {
                                 Valve Next = new Valve(Valves[r]);
-                                if (v.Visited.Count > 0 && v.Visited.Last().Routes.Count == 1)
+                                //if (v.Visited.Count > 0 && v.Visited.Last().Routes.Count == 1)
+                                //{
+                                //    Next.Routes.Remove(v.Visited.Last().Name);
+                                //}
+                                if (!v.Visited2.ContainsKey(v.Name) || v.Visited2[v.Name] < 2) // needs to be 3 for test
                                 {
-                                    Next.Routes.Remove(v.Visited.Last().Name);
+                                    Next.Visited = new List<Valve>(v.Visited);
+                                    Next.AddVisit(v);
+                                    Next.Flow = v.Flow;
+                                    if (Next.OpenValves.Count < NumberOfOpen)
+                                        NextTunnels.Add(new Valve(Next));
                                 }
-                                Next.Visited = new List<Valve>(v.Visited);
-                                Next.AddVisit(v);
-                                Next.Flow = v.Flow;
-                                if (Next.OpenValves.Count < NumberOfOpen)
-                                    NextTunnels.Add(new Valve(Next));
                             }
                         }
                     }
@@ -126,6 +132,7 @@ namespace Advent2022
             public bool Open;
             public List<string> Routes;
             public List<Valve> Visited;
+            public Dictionary<string, int> Visited2;
             public HashSet<string> OpenValves;
             public Valve(string name, int rate, List<string> routes)
             {
@@ -136,6 +143,7 @@ namespace Advent2022
                 Flow = 0;
                 Open = false;
                 OpenValves = new HashSet<string>();
+                Visited2 = new Dictionary<string, int>();
             }
             public Valve(Valve v)
             {
@@ -146,6 +154,7 @@ namespace Advent2022
                 Flow = v.Flow;
                 Open = v.Open;
                 OpenValves = new HashSet<string>(v.OpenValves);
+                Visited2 = new Dictionary<string, int>(v.Visited2);
             }
             public void AddVisit(Valve v)
             {
@@ -153,6 +162,11 @@ namespace Advent2022
                 Valve W = new Valve(v);
                 W.Visited.Clear();
                 Visited.Add(W);
+                Visited2 = new Dictionary<string, int>(W.Visited2);
+                if (Visited2.ContainsKey(W.Name))
+                    Visited2[W.Name]++;
+                else
+                    Visited2.Add(W.Name, 1);
             }
         }
     }
